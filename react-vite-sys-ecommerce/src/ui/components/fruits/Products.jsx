@@ -1,6 +1,22 @@
-import React from 'react';
+import { getCategories } from '@/api/CategoryApi';
+import React, { useEffect, useState } from 'react';
 
+// dev_2
 const Products = () => {
+
+    // dev_3
+    const [categories, setCategories] = useState([])
+
+    useEffect(()=>{
+        getCategories()
+            .then((res)=>{ // promise 객체
+                console.log(res)
+                setCategories(res.data)
+            })
+            .catch((err)=>{console.log(err)})
+    },[])
+
+
   return (
     <>
       {/* Fruits Shop Start*/}
