@@ -60,4 +60,6 @@ urlpatterns = [
     path("", include(router.urls)),
     # path("categories/", category_list),
     # path("category/<int:pk>/", category_detail),
+    path("auth/", include("djoser.urls")), # dev_5_Fruit
+    path("auth/", include("djoser.urls.jwt")), # dev_5_Fruit
 ]

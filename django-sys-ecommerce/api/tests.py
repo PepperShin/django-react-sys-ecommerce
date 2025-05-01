@@ -1,172 +1,59 @@
-from django.test import TestCase
-import pickle
-
 # Create your tests here.
-
-
-# dev_28 시리얼라이제이션의 이해
-class Rectangle:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.area = width * height
-
-
-def add(num1, num2):
-    return num1 + num2
-
-
-def sub(num1, num2):
-    return num1 - num2
-
-
-class ObjectAPITest(TestCase):
-    def setUp(self):
-        pass
-
-    def test_path(self):
-        dict = {
-            "add": add,
-            "sub": sub,
-        }
-        url = "add"
-        print(dict[url](1, 2))
-        print(dict["sub"](2, 1))
-
-    # 사각형 rect 객체를 직렬화 (Serialization)
-    def test_serialization(self):
-        rect = Rectangle(10, 20)
-
-        with open(
-            "rect.data", "wb"
-        ) as f:  # open은 rect.data 를 열어서 wb(write binary)로 저장한다.
-            pickle.dump(
-                rect, f
-            )  # pickel이 직렬화 함수. rect 클래스 객체를 f에 직렬화 하여 저장(바이너리)
-
-        # 역직렬화 (Deserialization)
-        with open("rect.data", "rb") as f:
-            r = pickle.load(f)
-
-        print(r.width, r.height)
-
-
-from rest_framework.views import APIView
-from store.models import Category
-from api.serializers.category_serializers import (
-    CategorySerializer,
-    CategorySimpleSerializer,
-)
-from rest_framework import status
-from rest_framework.response import Response
-
-
-class CategoriesAPI(APIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    simple_serializer_class = CategorySimpleSerializer
-
-    def get_queryset(self):
-        return self.queryset
-
-    def get_serializer(self, *args, **kwargs):
-        return self.serializer_class(*args, **kwargs)
-
-    def get_simple_serializer(self, *args, **kwargs):
-        return self.simple_serializer_class(*args, **kwargs)
-
-    def get(self, request):
-        categories = self.get_queryset()
-        serializer = self.get_serializer(categories, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = self.get_simple_serializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        # 예: id를 request에서 받았다고 가정
-        category_id = request.data.get("id")
-        try:
-            category = self.get_queryset().get(id=category_id)
-        except Category.DoesNotExist:
-            return Response(
-                {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-        serializer = self.get_simple_serializer(category, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request):
-        category_id = request.data.get("id")
-        try:
-            category = self.get_queryset().get(id=category_id)
-            category.delete()
-            return Response(
-                {"message": "Category deleted"}, status=status.HTTP_204_NO_CONTENT
-            )
-        except Category.DoesNotExist:
-            return Response(
-                {"error": "Category not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-
-
 from django.test import TestCase
-from django.contrib.auth.hashers import make_password, check_password
-# 서명(Signature) 테스트
-from django.core.signing import Signer, BadSignature   
+import jwt
 
-class HashEncryptionTestCase(TestCase):
 
-    #단방향 해시 테스트#
-    def test_one_way_hash(self):
-        original_password = "1234"
+# dev_5_Fruit
+# 🔍 해석
+# 필드	          의미	                 값 해석
+# exp	Expiration Time (만료 시간)	1744884869 → UTC 기준 2025-05-17 07:34:29 에 토큰 만료
+# iat	Issued At (발급 시각)	1744280069 → UTC 기준 2025-05-10 07:34:29 에 토큰 발급
+# jti	JWT ID (토큰 고유 ID)	"01fdf4faad8c4a17bd9f038aeb052d5b" → 이 토큰을 식별하기 위한 고유한 ID (무작위 UUID처럼 사용)
 
-        #비밀번호 해시 
-        hashed_password = make_password(original_password)
-        print("암호화 확인", hashed_password)
-        
-        # 해시된 값은 원본과 다름
-        self.assertNotEqual(original_password,hashed_password) # 두개가 달라야 참
 
-        # check_password로만 원본과 같은지 검증 가능
-        isTrue =  check_password(original_password,hashed_password)
-        print(isTrue)
-    
-    # 서명(signing) 테스트 코드
-    
-    #서명된값: my-secret-data:bDMOijmfGwA6uqlTYNhj-A5d61Lo933w02gZ3Wc3cZI
-    #복원된 값 my-secret-data
-    #원본 데이터 --[HMAC-SHA256+base64]--> 서명(signature)  
-    #=> 저장: "원본:서명"
+class ApiTest(TestCase):
+    def test_jwt_decode_access_token(self):
+        access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ2MzE5Njg0LCJpYXQiOjE3NDYwNjA0ODQsImp0aSI6ImJkODNlMDJmMjJlMjRhZDdhOTBmMTFjMjM3ZmEzZmM1IiwidXNlcl9pZCI6MX0.B0izHxDdkM9TDY13dYlG_jLndwI5iYDBCN3v328e95I"
 
-    #검증할 때는:
-    #"원본"을 다시 서명 --> 비교 --> 다르면 BadSignature 예외
-    def test_signing(self):
-        signer = Signer()
-        
-        # 데이터에 서명
-        #sign()
-        #value에 대해 HMAC-SHA256 해시 생성
-        #해시를 base64 인코딩
-        #원본 + 해시를 합쳐서 리턴
+        refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc0NjY2NTI4NCwiaWF0IjoxNzQ2MDYwNDg0LCJqdGkiOiJmZTM3ZWI4ZGY2MGU0MDY1ODNmNzBhYzkwMTRmOGIwNSIsInVzZXJfaWQiOjF9.7PiUF7Vs6MI1ghg9vCuc4zXpOXb6OTkK1OfmoaiGXuw"
 
-        original_value = "my-secret-data"
-        signed_value = signer.sign(original_value)
+        print("\n▶ ACCESS TOKEN 디코딩 결과:")
+        access_decoded = jwt.decode(access_token, options={"verify_signature": False})
+        for key, value in access_decoded.items():
+            print(f"{key}: {value}")
 
-        print("서명된값:", signed_value)
+        print("\n▶ REFRESH TOKEN 디코딩 결과:")
+        refresh_decoded = jwt.decode(refresh_token, options={"verify_signature": False})
+        for key, value in refresh_decoded.items():
+            print(f"{key}: {value}")
 
-        # 서명된 값을 검증 및 복원
-        #unsign()
-        #전달받은 signed_value를 쪼개서 (value, signature)
-        #value를 다시 해싱해서 기존 signature랑 비교
-        #다르면 BadSignature 에러 발생
-        unsigned_value = signer.unsign(signed_value)
+        # 기본적인 체크
+        self.assertEqual(access_decoded["token_type"], "access")
+        self.assertEqual(refresh_decoded["token_type"], "refresh")
+        self.assertEqual(access_decoded["user_id"], 1)
+        self.assertEqual(refresh_decoded["user_id"], 1)
 
-        print("복원된 값", unsigned_value)
+
+from rest_framework.test import APITestCase
+from rest_framework import status
+
+
+class UserMeAPITest(APITestCase):
+    def setUp(self):
+        # 이미 발급받은 토큰을 여기에 넣으세요
+        self.access_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzQ0MjgzMTcyLCJpYXQiOjE3NDQyODEzNzIsImp0aSI6ImQzYzE5MWYzZjRhYzQ0MmE4NTU0YzIyOGQ1ZGM5ZjhiIiwidXNlcl9pZCI6MX0.BlLTY1T1mUyB4t2BKgGE2YaY6LXnrIHfvogJ9RtB-wo"
+        self.url = "http://127.0.0.1:8000/api/auth/users/me/"
+
+    def test_get_user_me(self):
+        # Authorization 헤더에 JWT 토큰 포함
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
+
+        response = self.client.get(self.url)
+
+        print("🔎 응답 JSON:", response.json())
+
+        # 테스트: 200 OK 확인
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # 테스트: 사용자 정보에 username 포함 여부
+        self.assertIn("username", response.data)
