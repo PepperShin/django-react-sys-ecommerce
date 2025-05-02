@@ -25,7 +25,6 @@ class UserSerializer(BaseUserSerializer):
             "id", 
             "username",
             "email",
-            "password",
             "gender",
             "job",
             "old_cart",
