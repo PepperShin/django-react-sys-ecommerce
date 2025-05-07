@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 
 # dev_29
 # 바꾼 views 파일들 한번에 끌어오기
-from .views import base_views, product_views, category_views
+from .views import base_views, product_views, category_views, cart_views
 
 # dev_38
 from rest_framework import routers
@@ -62,4 +62,5 @@ urlpatterns = [
     # path("category/<int:pk>/", category_detail),
     path("auth/", include("djoser.urls")), # dev_5_Fruit
     path("auth/", include("djoser.urls.jwt")), # dev_5_Fruit
+    path("cart/merge/", cart_views.CartMergeAPIView.as_view()) # dev_6_Fruit
 ]

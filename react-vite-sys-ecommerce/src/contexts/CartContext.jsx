@@ -1,6 +1,7 @@
 // dev_6_Fruit
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { mergeCart } from '@/api/CartApi';
 
 const CartContext = createContext();
 
@@ -22,6 +23,28 @@ export const CartProvider = ({ children }) => {
       console.log('🛒 savedCart:', localStorage.getItem('cart'));
     }
   }, [cartItems, user]);
+
+  // 로그인 시 카트 병합
+  // 병합 순서
+  useEffect(() => {
+    const fetchCart = async () => {
+        // 로그인이 되면
+        // 로컬에 저장된 카트를 서버로 보내어 서버에서 로컬에 저장된 카트를 병합
+        if(user){
+            const guestCart = JSON.parse(localStorage.getItem("cart") || "{}")
+            try {
+                if(Object.keys(guestCart.length > 0)){
+                    await mergeCart(localStorage.getItem("cart"))
+                    localStorage.removeItem("cart")
+                }
+            } catch (error) {
+                console.error("장바구니 병합 / 불러오기 실패", error)
+            }
+        }
+    }
+    fetchCart()
+  }, [user])
+
 
   const getTotalItems = ()=>{
     // let total = 0;

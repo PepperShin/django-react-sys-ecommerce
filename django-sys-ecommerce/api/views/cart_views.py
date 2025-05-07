@@ -22,3 +22,33 @@ class CartAPIView(APIView):
 
     def delete(self,request):
         pass
+
+# dev_6_Fruit
+# POST /api/cart/merge 장바구니에 상품 추가
+from rest_framework.permissions import IsAuthenticated
+import json
+from rest_framework.response import Response
+class CartMergeAPIView(APIView):
+    permission_classes = [IsAuthenticated] # 로그인 된 사람만 밑의 함수가 실행되게 한다.
+    def post(self, request):
+        '''
+        localStorage의 장바구니를 서버 old_cart에 병합
+        '''
+        user = request.user
+        local_storage_cart = request.data.get("cart", "{}") # cart가 없으면 뒤에껄 집어넣는다.
+
+        local_storage_cart = json.loads(local_storage_cart or "{}")
+        old_cart = json.loads(user.old_cart or "{}")
+
+        # 병합 : 같은 상품이 있다면 수량 증가
+        for product_id, item in local_storage_cart.items():
+            quantity = int(item.get("quantity", 0))
+            if product_id in old_cart:
+                old_cart[product_id]["quantity"] += quantity
+            else:
+                old_cart[product_id] = {"quantity": quantity}
+
+        user.old_cart = json.dumps(old_cart)
+        user.save()
+
+        return Response({"message": "장바구니가 병합되었습니다."})
