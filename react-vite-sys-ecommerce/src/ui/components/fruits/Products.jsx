@@ -1,5 +1,6 @@
 import { getCategories } from '@/api/CategoryApi';
 import { getProducts } from '@/api/ProductApi';
+import { useCart } from '@/contexts/CartContext';
 import React, { useEffect, useState } from 'react';
 
 // dev_2
@@ -12,6 +13,9 @@ const Products = () => {
   // dev_4_Fruit
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [products, setProducts] = useState([]);
+
+  // dev_6_Fruit
+  const {addToCart} = useCart()
 
   // 빈 배열: 처음 렌더링 때 한 번만 호출
   // 초기화 (__init__)
@@ -118,9 +122,10 @@ const Products = () => {
                               </p>
                               <div className="d-flex flex-column align-items-center justify-content-between flex-lg-wrap">
                                 <p className="text-dark fs-5 fw-bold mb-2">${product.price}</p>
-                                <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary">
+                                {/* dev_6_Fruit */}
+                                <button onClick={() => addToCart(product)} className="btn border border-secondary rounded-pill px-3 text-primary">
                                   <i className="fa fa-shopping-bag me-2 text-primary" /> Add to cart
-                                </a>
+                                </button>
                               </div>
                             </div>
                           </div>

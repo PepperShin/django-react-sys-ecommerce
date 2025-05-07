@@ -4,6 +4,7 @@ import heroImg2 from '@/assets/fruits/img/hero-img-2.jpg';
 import { useAuth } from '@/contexts/AuthContext';
 import { Outlet } from "react-router-dom"
 import { Link } from "react-router-dom"
+import { useCart } from '@/contexts/CartContext';
 
 const Header = () => {
   // dev_5_Fruit
@@ -13,6 +14,9 @@ const Header = () => {
   const logoutHandle = () =>{
     logout()
   }
+
+  // dev_6_Fruit 장바구니 카트 숫자
+  const {getTotalItems} = useCart()
 
   return (
     <>
@@ -123,7 +127,8 @@ const Header = () => {
                     className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"
                     style={{ top: '-5px', left: 15, height: 20, minWidth: 20 }}
                   >
-                    3
+                    {/* dev_6_Fruit */}
+                    {getTotalItems()}
                   </span>
                 </a>
                 <a href="#" className="my-auto">

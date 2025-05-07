@@ -1,5 +1,5 @@
 // dev_5_Fruit
-import { loginUser } from '@/api/AuthApi';
+import { getCurrentUser, loginUser } from '@/api/AuthApi';
 import { createContext, useContext, useState } from 'react';
 
 const AuthContext = createContext(); // context 메모리 공간에 저장한다. 어디서든 꺼내쓸 수 있다.
