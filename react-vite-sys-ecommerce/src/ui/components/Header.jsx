@@ -1,8 +1,19 @@
 import React from 'react';
-import heroImg1 from '@/assets/fruits/img/hero-img-1.png'
-import heroImg2 from '@/assets/fruits/img/hero-img-2.jpg'
+import heroImg1 from '@/assets/fruits/img/hero-img-1.png';
+import heroImg2 from '@/assets/fruits/img/hero-img-2.jpg';
+import { useAuth } from '@/contexts/AuthContext';
+import { Outlet } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 const Header = () => {
+  // dev_5_Fruit
+  const { user, logout } = useAuth();
+  console.log(user);
+
+  const logoutHandle = () =>{
+    logout()
+  }
+
   return (
     <>
       {/* Spinner Start */}
@@ -26,9 +37,16 @@ const Header = () => {
               </small>
               <small className="me-3">
                 <i className="fas fa-envelope me-2 text-secondary" />
-                <a href="#" className="text-white">
-                  Email@Example.com
-                </a>
+                {/* dev_5_Fruit */}
+                {user ? (
+                  <span className="text-white" style={{ cursor: 'pointer' }} onClick={logoutHandle}>
+                    {user.username}님 환영합니다.
+                  </span>
+                ) : (
+                  <Link to="/login" className="text-white">
+                    로그인을 해주세요
+                  </Link>
+                )}
               </small>
             </div>
             <div className="top-link pe-2">
@@ -170,11 +188,7 @@ const Header = () => {
               <div id="carouselId" className="carousel slide position-relative" data-bs-ride="carousel">
                 <div className="carousel-inner" role="listbox">
                   <div className="carousel-item active rounded">
-                    <img
-                    src={heroImg1}
-                      className="img-fluid w-100 h-100 bg-secondary rounded"
-                      alt="First slide"
-                    />
+                    <img src={heroImg1} className="img-fluid w-100 h-100 bg-secondary rounded" alt="First slide" />
                     <a href="#" className="btn px-4 py-2 text-white rounded">
                       Fruites
                     </a>
