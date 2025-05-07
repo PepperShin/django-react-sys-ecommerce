@@ -62,5 +62,7 @@ urlpatterns = [
     # path("category/<int:pk>/", category_detail),
     path("auth/", include("djoser.urls")), # dev_5_Fruit
     path("auth/", include("djoser.urls.jwt")), # dev_5_Fruit
-    path("cart/merge/", cart_views.CartMergeAPIView.as_view()) # dev_6_Fruit
+    # dev_6_Fruit
+    path("cart/", cart_views.CartAPIView.as_view()),
+    path("cart/merge/", cart_views.CartMergeAPIView.as_view()),
 ]

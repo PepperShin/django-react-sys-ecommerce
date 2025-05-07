@@ -1,7 +1,7 @@
 // dev_6_Fruit
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { mergeCart } from '@/api/CartApi';
+import { getCarts, mergeCart } from '@/api/CartApi';
 
 const CartContext = createContext();
 
@@ -28,39 +28,62 @@ export const CartProvider = ({ children }) => {
   // 병합 순서
   useEffect(() => {
     const fetchCart = async () => {
-        // 로그인이 되면
-        // 로컬에 저장된 카트를 서버로 보내어 서버에서 로컬에 저장된 카트를 병합
-        if(user){
-            const guestCart = JSON.parse(localStorage.getItem("cart") || "{}")
-            try {
-                if(Object.keys(guestCart.length > 0)){
-                    await mergeCart(localStorage.getItem("cart"))
-                    localStorage.removeItem("cart")
-                }
-            } catch (error) {
-                console.error("장바구니 병합 / 불러오기 실패", error)
-            }
+      // 로그인이 되면
+      // 로컬에 저장된 카트를 서버로 보내어 서버에서 로컬에 저장된 카트를 병합
+      if (user) {
+        const guestCart = JSON.parse(localStorage.getItem('cart') || '{}');
+        try {
+          if (Object.keys(guestCart.length > 0)) {
+            await mergeCart(localStorage.getItem('cart'));
+            localStorage.removeItem('cart');
+          }
+
+          // 병합 작업이 끝난 후 서버에서 카트를 로드한다.
+          loadCart();
+        } catch (error) {
+          console.error('장바구니 병합 / 불러오기 실패', error);
         }
+      }
+    };
+    fetchCart();
+  }, [user]);
+
+  //장바구니 불러오기
+  const loadCart = async () => {
+    try {
+      const response = await getCarts();
+
+      console.log("카트============")
+      console.log(response)
+
+      // 서버 응답: 배열일 경우 변환
+      const cartData = {};
+      response.data.cart.forEach((item) => {
+        cartData[item.product.id] = {
+          quantity: item.quantity,
+          price: item.price,
+        };
+      });
+
+      setCartItems(cartData);
+    } catch (error) {
+      console.error('❌ 장바구니 불러오기 실패', error);
     }
-    fetchCart()
-  }, [user])
+  };
 
-
-  const getTotalItems = ()=>{
+  const getTotalItems = () => {
     // let total = 0;
     // const items = Object.values(cartItems); // 상품 객체들을 배열로 가져옴
-        // Object는 자바 스크립트 내장 객체. 객체를 만들고 다룰 때 사용하는 기본 클래스.
-  
+    // Object는 자바 스크립트 내장 객체. 객체를 만들고 다룰 때 사용하는 기본 클래스.
+
     // for (let i = 0; i < items.length; i++) {
     //   total += items[i].quantity; // 각 상품의 수량을 누적
     // }
-  
+
     // return total;
 
     return Object.values(cartItems).reduce((acc, item) => acc + item.quantity, 0);
-  }
-
-  
+  };
 
   // 장바구니 추가
   const addToCart = async (product, quantity = 1) => {
@@ -70,9 +93,8 @@ export const CartProvider = ({ children }) => {
     if (user) {
       // 로그인 되어있을때
       try {
-
       } catch (err) {
-        console.error("서버 장바구니 추가 실패", err);
+        console.error('서버 장바구니 추가 실패', err);
       }
     } else {
       // 로그인이 되어있지 않을때
