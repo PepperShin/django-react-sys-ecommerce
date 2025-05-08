@@ -9,6 +9,10 @@ from decimal import Decimal
 # dev_23
 from accounts.models import User
 
+# dev_7_Fruit
+import json
+from decimal import Decimal
+
 
 # dev_15
 class Cart:  # 카트 클래스 생성
@@ -148,3 +152,21 @@ class Cart:  # 카트 클래스 생성
 
             except Exception as e:
                 print(f"❌ 복호화 실패 - 세션 키: {session.session_key}, 오류: {e}")
+
+
+# dev_7_Fruit
+class CartDRF:
+    def __init__(self, request):
+        self.request = request
+
+        # 상품 전체 삭제 메서드
+    def remove_from_old_cart(self, user, product_id):
+        old_cart = user.old_cart or "{}"
+        cart = json.loads(old_cart)
+
+        product_id = str(product_id)
+
+        if product_id in cart:
+            del cart[product_id]
+            user.old_cart = json.dumps(cart)
+            user.save()

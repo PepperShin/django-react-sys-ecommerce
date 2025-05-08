@@ -11,6 +11,9 @@ from api.serializers.product_serializers import ProductSerializer
 # DELETE   /api/cart/	   상품 제거 or 전체 비우기
 # 🔁 DELETE에서 product_id를 넘기면 해당 상품만 제거, 안 넘기면 전체 비움 처리됩니다.
 
+# dev_7_Fruit
+from cart.cart import CartDRF
+
 class CartAPIView(APIView):
     # permission_classes = [IsAuthenticated]
     
@@ -62,8 +65,24 @@ class CartAPIView(APIView):
     def put(self,request):
         pass
 
+    # dev_7_Fruit
     def delete(self,request):
-        pass
+        """
+        old_cart에서 상품 제거 또는 전체 삭제
+        """
+        user = request.user
+        product_id = request.data.get("product_id")
+
+        cart = CartDRF(request)
+
+        # 특정 상품 제외
+        if product_id:
+            try:
+                product = Product.objects.get(id=product_id) # get은 없으면 에러를 일으킨다
+                cart.remove_from_old_cart(user, product_id)
+                return Response({"message": "상품이 장바구니에서 제거되었습니다."})
+            except Product.DoesNotExist:
+                return Response({"error": "상품이 존재하지 않습니다."}, status=404)
 
 # dev_6_Fruit
 # POST /api/cart/merge 장바구니에 상품 추가
