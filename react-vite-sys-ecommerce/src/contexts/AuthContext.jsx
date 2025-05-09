@@ -52,6 +52,9 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(null);
         localStorage.removeItem("access");
         localStorage.removeItem("refresh");
+
+        // dev_7_Fruit 카트 삭제
+        localStorage.removeItem("cart");
     }
 
     const value = {
