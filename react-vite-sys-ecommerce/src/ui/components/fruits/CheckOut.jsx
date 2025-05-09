@@ -2,6 +2,8 @@ import { formatCurrency, formatCurrencyWithWon } from '@/api/format';
 import { useCart } from '@/contexts/CartContext';
 import React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import RequestPay from '../payment/RequestPay';
 
 // dev_8_Fruit
 const CheckOut = () => {
@@ -21,6 +23,22 @@ const CheckOut = () => {
 
         setShippingData((prev) => ({ ...prev, [name]: value }));
     };
+
+    const navigate = useNavigate()
+
+    const handlePayment = async () => {
+        try {
+            const result = await RequestPay(shippingData, userCart)
+            if(result) {
+                console.log("====결제 완료====")
+                alert("결제 및 주문이 성공적으로 완료 되었습니다.")
+                // clearCart() // 장바구니 비우기
+                navigate("/") // 루트로 이동
+            }
+        } catch (error) {
+            console.error("결제 실패:", error)
+        }
+    }
 
     return (
         <>
@@ -324,11 +342,13 @@ const CheckOut = () => {
                                     </div>
                                 </div>
                                 <div className="row g-4 text-center align-items-center justify-content-center pt-4">
+                                    {/* dev_8_Fruit */}
                                     <button
                                         type="button"
+                                        onClick={handlePayment}
                                         className="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary"
                                     >
-                                        Place Order
+                                        카카오페이
                                     </button>
                                 </div>
                             </div>
