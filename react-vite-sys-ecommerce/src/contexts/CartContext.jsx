@@ -1,7 +1,7 @@
 // dev_6_Fruit
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { deleteCart, getCarts, mergeCart } from '@/api/CartApi';
+import { addCart, deleteCart, getCarts, mergeCart } from '@/api/CartApi';
 
 const CartContext = createContext();
 
@@ -101,6 +101,11 @@ export const CartProvider = ({ children }) => {
     if (user) {
       // 로그인 되어있을때
       try {
+        const response = await addCart(product.id, quantity)
+        console.log(response)
+
+        loadCart()
+
       } catch (err) {
         console.error('서버 장바구니 추가 실패', err);
       }

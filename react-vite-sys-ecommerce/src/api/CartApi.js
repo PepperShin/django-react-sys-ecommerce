@@ -28,3 +28,11 @@ export const deleteCart = (product_id = null) => {
   
     return http.delete("/api/cart/", config);
   };
+
+
+export const addCart = (product_id, quantity = 1) => {
+    return http.post("/api/cart/", {
+        product_id,
+        quantity
+    });
+  };

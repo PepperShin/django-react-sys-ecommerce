@@ -25,6 +25,17 @@ const Cart = () => {
     removeFromCart(product.id)
   }
 
+  const handleIncrease = (item) => {
+    addToCart(item.product, 1) // useCart의 addToCart
+  }
+
+  const handleDecrease = (item) => {
+    if(item.quantity > 1)
+      addToCart(item.product, -1) // useCart의 addToCart
+    else if (item.quantity == 1)
+      handleRemoveItem(item.product)
+  }
+
   return (
     <>
       {/* Single Page Header start */}
@@ -79,7 +90,7 @@ const Cart = () => {
                       <td>
                         <div className="input-group quantity mt-4" style={{ width: 100 }}>
                           <div className="input-group-btn">
-                            <button className="btn btn-sm btn-minus rounded-circle bg-light border">
+                            <button onClick={() => handleDecrease(item)} className="btn btn-sm btn-minus rounded-circle bg-light border">
                               <i className="fa fa-minus" />
                             </button>
                           </div>
@@ -89,7 +100,7 @@ const Cart = () => {
                             Value={item.quantity}
                           />
                           <div className="input-group-btn">
-                            <button className="btn btn-sm btn-plus rounded-circle bg-light border">
+                            <button onClick={() => handleIncrease(item)} className="btn btn-sm btn-plus rounded-circle bg-light border">
                               <i className="fa fa-plus" />
                             </button>
                           </div>

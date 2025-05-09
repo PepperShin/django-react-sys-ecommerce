@@ -1,5 +1,6 @@
 import Cart from '@/ui/components/fruits/Cart'
 import Products from '@/ui/components/fruits/products'
+import Hero from '@/ui/components/hero'
 import Login from '@/ui/components/login/Login'
 import MainLayout from '@/ui/layouts/MainLayout'
 import { Children } from 'react'
@@ -14,12 +15,12 @@ const routes = [
         children: [
             {
                 path:'',
-                element:<Products></Products>,
+                element:<div><Hero/><Products></Products></div>,
                 loader: () => '상품들',
             },
             { // dev_5_Fruit
                 path:'login',
-                element:<Login></Login>,
+                element:<div><Hero/><Login></Login></div>,
                 loader: () => '로그인',
             },
             { // dev_7_Fruit
