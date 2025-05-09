@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCart } from '@/contexts/CartContext';
 import React from 'react';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // dev_7_Fruit
 const Cart = () => {
@@ -149,12 +149,13 @@ const Cart = () => {
                   <h5 className="mb-0 ps-4 me-4">Total</h5>
                   <p className="mb-0 pe-4">{userCart && formatCurrencyWithWon(userCart.cart_total_price)}</p>
                 </div>
-                <button
+                <Link
+                  to ="/checkout"
                   className="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
                   type="button"
                 >
                   Proceed Checkout
-                </button>
+                </Link>
               </div>
             </div>
           </div>
