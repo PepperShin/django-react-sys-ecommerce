@@ -144,12 +144,29 @@ export const CartProvider = ({ children }) => {
     }
   }
 
+  // 카트 전체 비우기
+  const clearCart = async () => {
+    if(user){
+      try {
+        await deleteCart()
+        setCartItems({})
+      } catch (error) {
+        console.error("서버 장바구니 비우기 실패", error)
+      }
+
+    }else{
+      setCartItems({}) // 카트 아이템을 빈 객체로 바꾸기
+      localStorage.removeItem("cart")
+    }
+  }
+
   return (
     <CartContext.Provider
       value={{
         addToCart,
         getTotalItems,
         removeFromCart,
+        clearCart,
         cartItems,
         userCart, // dev_7_Fruit
       }}

@@ -16,7 +16,7 @@ const CheckOut = () => {
         phone: '',
         email: '',
     });
-    const { userCart } = useCart();
+    const { userCart, clearCart } = useCart();
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -32,7 +32,7 @@ const CheckOut = () => {
             if(result) {
                 console.log("====결제 완료====")
                 alert("결제 및 주문이 성공적으로 완료 되었습니다.")
-                // clearCart() // 장바구니 비우기
+                clearCart() // 장바구니 비우기
                 navigate("/") // 루트로 이동
             }
         } catch (error) {

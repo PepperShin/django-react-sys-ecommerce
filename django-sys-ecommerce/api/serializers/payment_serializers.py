@@ -12,4 +12,4 @@ class PaymentSerializer(serializers.ModelSerializer):
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        exclude = ["user", "order"] # 주문 포함
+        exclude = ["user", "order"]

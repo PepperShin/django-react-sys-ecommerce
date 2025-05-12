@@ -100,6 +100,11 @@ class CartAPIView(APIView):
                 return Response({"message": "상품이 장바구니에서 제거되었습니다."})
             except Product.DoesNotExist:
                 return Response({"error": "상품이 존재하지 않습니다."}, status=404)
+        # 전체 비우기
+        else:
+            user.old_cart = "{}"
+            user.save()
+            return Response({"message": "장바구니가 비워졌습니다."})
 
 # dev_6_Fruit
 # POST /api/cart/merge 장바구니에 상품 추가
