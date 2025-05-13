@@ -57,6 +57,10 @@ INSTALLED_APPS = [
     "api",
     "corsheaders", # dev_3_Fruit
     "djoser", # dev_5_Fruit
+    # dev_9_1_Fruit REST API 기반 소셜로그인
+    "rest_framework.authtoken",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
 ]
 
 MIDDLEWARE = [
@@ -219,7 +223,12 @@ SOCIALACCOUNT_PROVIDERS = {
         # scope의 경우 내가 어떤 데이터를 가져올건지를 선택하는 것인데 사이트마다
         # 제공하는 값이 다르기 때문에 가져올 데이터를 설정한 이후 추가/삭제 해보면 됩니다.
         # SCOPE값에 제공하지 않는 값을 넣거나 하는 이유로 오류가 나올 수 있음
-        "SCOPE": [],
+        "SCOPE": [
+            # dev_9_1_Fruit
+            "account_email",
+            "profile",
+            "gender",
+        ],
         # 추가
         "AUTH_PARAMS": {
             "access_type": "online",  # 추가
@@ -271,4 +280,13 @@ DJOSER = {
         "current_user": "accounts.serializers.UserSerializer",
     },
     "CREATE_SESSION_ON_LOGIN": True,  # 로그인하면 세션도 생성됨
+}
+
+# dev_9_1_Fruit
+# dj_rest_auth를 위한 세팅
+SOCIALACCOUNT_ADAPTER = "accounts.adapters.KakaoSocialAccountAdapter"
+# 3.0.0 버전 이상
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_HTTPONLY": False, # refresh 토큰, True면 refresh 토큰이 오지 않음
 }
