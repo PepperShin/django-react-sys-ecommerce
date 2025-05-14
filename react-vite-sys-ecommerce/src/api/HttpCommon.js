@@ -6,6 +6,7 @@ const accessToken = localStorage.getItem('access');
 // dev_3_Fruit
 const http = axios.create({
   baseURL: import.meta.env.VITE_REQUEST_URL, // 현업에서는 고정 아이피 또는 도메인.
+  withCredentials: true, // ✅ 세션 쿠키도 같이 보냄 dev_9_2_Fruit
   headers: {
     // http 프로토콜 헤더
     Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
@@ -63,9 +64,10 @@ http.interceptors.response.use(
 
       try {
         const refresh = localStorage.getItem('refresh');
-        const res = await axios.post('http://127.0.0.1:8000/api/auth/jwt/refresh/', {
-          refresh: refresh,
-        });
+        // dev_9_2_Fruit 
+        const res = await axios.post("http://127.0.0.1:8000/api/dj-rest-auth/token/refresh/",null ,{
+            withCredentials:true,
+          });
 
         const newAccess = res.data.access;
         localStorage.setItem('access', newAccess);

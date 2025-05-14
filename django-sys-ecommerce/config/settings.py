@@ -258,7 +258,8 @@ SOCIALACCOUNT_PROVIDERS = {
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication", # dev_9_2_Fruit
     ),
 }
 
@@ -288,5 +289,31 @@ SOCIALACCOUNT_ADAPTER = "accounts.adapters.KakaoSocialAccountAdapter"
 # 3.0.0 버전 이상
 REST_AUTH = {
     "USE_JWT": True,
-    "JWT_AUTH_HTTPONLY": False, # refresh 토큰, True면 refresh 토큰이 오지 않음
+    "JWT_AUTH_HTTPONLY": True, # dev_9_2_Fruit
+    'JWT_AUTH_REFRESH_COOKIE' : "refresh_token", # dev_9_2_Fruit
+    'SESSION_LOGIN' :False, # dev_9_2_Fruit 
+    'JWT_AUTH_SAMESITE': 'Lax',# dev_9_2_Fruit 
+    'JWT_AUTH_COOKIE_USE_CSRF' : False, # dev_9_2_Fruit
+    # 시리얼라이져 세팅
+    'USER_DETAILS_SERIALIZER': "accounts.serializers.UserResAuthSerializer",
+    'REGISTER_SERIALIZER': 'accounts.serializers.UserRegisterRestAuthSerializer',
 }
+
+# dev_9_2_Fruit
+# 브라우저는 axios의 withCredentials: true 요청 시 쿠키를 포함해 전송
+CORS_ALLOW_CREDENTIALS = True
+
+# 로그인 방식: 이메일로 로그인
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
+ACCOUNT_USERNAME_REQUIRED = False  # username 필요 없음
+ACCOUNT_EMAIL_REQUIRED = True  # 이메일 필수
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"  # username을 필드로 씀
+
+# 이메일 인증 건너뛰기 (선택)
+ACCOUNT_EMAIL_VERIFICATION = "none"  # 개발 중에는 'none' 추천
+ACCOUNT_LOGOUT_ON_GET = True 
+SOCIALACCOUNT_LOGIN_ON_GET = True #브라우저에서 단순히 링크 클릭이나 리다이렉트로 로그아웃을 시킬 수 있게 하려면 GET 요청을 허용해야 함.
+
+# # 개발 환경이면 False, 운영이면 True
+# CSRF_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = False
