@@ -25,6 +25,6 @@ from rest_framework import filters
 # dev_3 fruit
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategorySimpleSerializer
+    serializer_class = CategorySerializer
 
 

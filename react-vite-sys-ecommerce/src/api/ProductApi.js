@@ -11,3 +11,14 @@ import http from "./HttpCommon"
 export const getProducts = ()=>{
     return http.get('/api/products/')
 }
+
+export const getProductsPaging = ({ page = 1, search = "", ordering = "", category = "" }) => {
+    const params = {
+        page,
+        search,
+        ordering,
+        category,    
+    }
+    // /api/product-list/?page=1&search=컴퓨터&ordering=-id
+    return http.get('/api/product-list/', {params})
+}

@@ -15,6 +15,8 @@ from api.views.payment_views import PaymentViewSet
 # dev_9_1_Fruit
 from api.views import social_views
 
+# dev_10_Fruit
+from api.views.product_views import ProductViewSet
 
 # dev_28
 app_name = "api"
@@ -38,6 +40,9 @@ category_detail = category_views.CategoryViewSet.as_view(
 # PUT/PATCH /api/payments/<id>/ – 수정
 # DELETE /api/payments/<id>/ – 삭제
 router.register("payments", PaymentViewSet)
+
+# dev_10_Fruit
+router.register("product-list", ProductViewSet)
 
 urlpatterns = [
     # path("hello-world/", base_views.hello_world),
@@ -113,3 +118,24 @@ urlpatterns = [
 # POST    /dj-rest-auth/registration/    소셜 로그인 시 회원가입
 
 #-=============================================================
+# 2. 생성되는 URL
+# ✅ djoser.urls (/auth/ 아래에 생성되는 URL)
+
+# 메서드	경로	설명
+# POST	/auth/users/	회원가입
+# GET	/auth/users/me/	현재 로그인된 유저 정보
+# POST	/auth/users/resend_activation/	활성화 이메일 재전송 (선택)
+# POST	/auth/users/activation/	계정 활성화 (선택)
+# POST	/auth/users/set_password/	비밀번호 변경 (로그인 상태)
+# POST	/auth/users/reset_password/	비밀번호 재설정 이메일 전송
+# POST	/auth/users/reset_password_confirm/	비밀번호 재설정 확인
+# POST	/auth/token/login/	세션 로그인 (Token 기반 인증 사용 시)
+# POST	/auth/token/logout/	세션 로그아웃 (Token 기반 인증 사용 시)
+
+# ✅ djoser.urls.jwt (/auth/jwt/ 아래에 생성되는 URL)
+
+# 메서드	경로	설명
+# POST	/auth/jwt/create/	JWT 로그인 (access + refresh 발급)
+# POST	/auth/jwt/refresh/	access 토큰 재발급
+# POST	/auth/jwt/verify/	토큰 유효성 검사
+# POST	/auth/jwt/logout/	로그아웃 (refresh 토큰 블랙리스트 처리)

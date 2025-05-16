@@ -77,9 +77,9 @@ MIDDLEWARE = [
 
 # dev_3_Fruit
 # 정확히 허용할 도메인만
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # 프론트 도메인
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5173",  # 프론트 도메인
+# ]
 CORS_ORIGIN_ALLOW_ALL = True  # 어떠한 출처든 상관없이 정보를 공유
 
 ROOT_URLCONF = "config.urls"
@@ -255,6 +255,11 @@ SOCIALACCOUNT_PROVIDERS = {
 #토큰에서 사용자 ID를 추출하고, 해당 사용자를 DB에서 가져옴
 #해당 사용자를 request.user에 할당
 #DRF에서 모든 API 뷰가 사용할 기본 인증 클래스들을 지정
+
+#http://127.0.0.1:8000/api/product-list/?page=2
+#http://127.0.0.1:8000/api/categories/?page=1
+
+# Django REST Framework (DRF) 
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

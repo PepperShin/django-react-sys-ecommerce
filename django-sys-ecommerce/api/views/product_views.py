@@ -5,6 +5,7 @@ from api.serializers.product_serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
+#http://127.0.0.1:8000/api/products/?ordering=-price
 
 # dev_29
 @api_view(["GET", "POST"])
@@ -53,3 +54,78 @@ def product_api(request, pk):
         return Response(
             "SUCCESS", status=status.HTTP_204_NO_CONTENT
         )  # from rest_framework import status
+
+#dev_10_Fruit
+# 페이지네이션 클래스 (옵션)
+
+# GET /api/product-list/
+# 요청 예시
+# 검색 조건이 URL에 있으므로 즐겨찾기/공유 가능
+# 조회는 GET으로 한다
+# 서버에서 캐싱 가능
+# /api/product-list/?page=2	페이지 2
+# /api/product-list/?search=포도	'포도' 포함 검색
+# /api/product-list/?category=4	카테고리 ID가 4번인 상품 필터링
+# /api/product-list/?ordering=price	가격 오름차순 정렬
+# /api/product-list/?ordering=-id	최신순 정렬
+from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
+
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
+
+#http://127.0.0.1:8000/api/product-list/?page_size=5
+#http://127.0.0.1:8000/api/product-list/?/api/products/?page=3&page_size=25
+
+#LimitOffsetPagination
+#CursorPagination
+# {
+    # "count": 21,
+    # "next": "http://127.0.0.1:8000/api/product-list/?page=2&page_size=5",
+    # "previous": null,
+    # "results": [
+    #     {
+
+class ProductPagination(PageNumberPagination):
+    page_size = 10 # 기본 페이지 크기
+    page_size_query_param = "page_size"  # 클라이언트가 지정할 수 있는 파라미터
+    max_page_size = 100  # 최대 페이지 크기 제한
+
+# 장고에서 쿼리스트링 필터 만들기
+import django_filters
+# GET /api/product-list/?category=1&min_price=1000&max_price=3000
+
+class ProductFilter(django_filters.FilterSet):
+    min_price = django_filters.NumberFilter(field_name='price', lookup_expr='gte') # >=
+    max_price = django_filters.NumberFilter(field_name='price', lookup_expr='lte') # <=
+
+    class Meta:
+        model = Product
+        fields = ['category', 'min_price', 'max_price']   
+
+
+# ModelViewSet
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    pagination_class = ProductPagination
+
+    # 정렬/검색 
+    # http://127.0.0.1:8000/api/products/?ordering=-price
+    # 요청을 가로채서 필터셋(filterset_class)을 확인.
+    # 정의된 필드와 비교해 유효한 필터만 추출
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter] # DjangoFilterBackend가 정렬을 한다.
+
+    # 필터 직접 추가
+    filterset_class = ProductFilter
+    # 필터링 항목 (URL에서 ?category=값 으로 필터링 가능)
+    filterset_fields = ['category']
+        
+    # 정렬 필드 (?ordering=price )
+    # http://127.0.0.1:8000/api/product-list/?ordering=-price
+    ordering_fields = ['id','price','name']
+    ordering = ['id']
+
+    # 검색 필드 (?search=아이폰)
+    # Product.objects.filter(name__icontains='컴퓨터')
+    search_fields = ['name','description'] # 필요에 따라 수정 가능
