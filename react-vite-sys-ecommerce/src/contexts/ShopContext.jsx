@@ -7,14 +7,23 @@ const ShopContext = createContext();
 export const useShop = () => useContext(ShopContext);
 
 export const ShopProvider = ({ children }) => {
-    const [currentPage, setCurrentPage] = useState(1)
+    // 정렬, 페이징, 카테고리 분류된 상품들
     const [products, setProducts] = useState([]);
+    // 검색 관련
     const [search, setSearch] = useState('');
-    const [ordering, setOrdering] = useState("")
-    const [category, setCategory] = useState("")
+    // 정렬 관련
+    const [ordering, setOrdering] = useState('');
+    // 카테고리 분류
+    const [category, setCategory] = useState('');
+    // paging 관련
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+    // min max 필터링
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(null);
 
     // {
-    //   "count": 21,
+    //   "count": 21, 얘가 totalCount
     //   "next": "http://127.0.0.1:8000/api/product-list/?ordering=-price&page=2",
     //   "previous": null,
     //   "results": [
@@ -40,10 +49,12 @@ export const ShopProvider = ({ children }) => {
                 search, // 키와 밸류가 같으면 알아서 세팅이 된다. search : search와 동일. es6 문법
                 ordering,
                 category,
+                min_price : minPrice,
+                max_price : maxPrice,
             });
-            console.log(response.data)
+            console.log(response.data);
             setProducts(response.data.results);
-            
+            setTotalCount(response.data.count);
         } catch (error) {
             console.error('상품 목록을 불러오는 중 오류 발생:', error);
         }
@@ -51,8 +62,8 @@ export const ShopProvider = ({ children }) => {
 
     // 조건이 변경될때마다 API 다시 호출
     useEffect(() => {
-        fetchProducts()
-    },[currentPage, search, ordering, category])
+        fetchProducts();
+    }, [currentPage, search, ordering, category, minPrice, maxPrice]);
 
     const value = {
         search,
@@ -64,8 +75,11 @@ export const ShopProvider = ({ children }) => {
         ordering,
         setOrdering,
         category,
-        setCategory
-    }
+        setCategory,
+        totalCount,
+        setMinPrice,
+        setMaxPrice,
+    };
 
     return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;
 };

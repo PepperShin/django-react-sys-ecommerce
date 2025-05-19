@@ -1,4 +1,4 @@
-import http from "./HttpCommon"
+import http from './HttpCommon';
 
 // dev_4_Fruit
 // http://127.0.0.1:8000/api/products/
@@ -8,17 +8,37 @@ import http from "./HttpCommon"
 // GET       products/{id}   product
 // Delete    products/{id}   delete product
 // PUT       products/{id}   modify
-export const getProducts = ()=>{
-    return http.get('/api/products/')
-}
+export const getProducts = () => {
+    return http.get('/api/products/');
+};
 
-export const getProductsPaging = ({ page = 1, search = "", ordering = "", category = "" }) => {
+export const getProductsPaging = ({
+    page = 1,
+    search = '',
+    ordering = '',
+    category = '',
+    min_price = 0,
+    max_price = null,
+    page_size = 12,
+}) => {
     const params = {
         page,
         search,
         ordering,
-        category,    
-    }
+        category,
+        page_size
+    };
+
+    if(min_price != null)
+        params.min_price = min_price
+
+    if(max_price != null)
+        params.max_price = max_price
+    
     // /api/product-list/?page=1&search=컴퓨터&ordering=-id
-    return http.get('/api/product-list/', {params})
-}
+    return http.get('/api/product-list/', { params });
+};
+
+export const getProductMaxPrice = () => {
+    return http.get(`/api/product-list/max-price/`);
+};

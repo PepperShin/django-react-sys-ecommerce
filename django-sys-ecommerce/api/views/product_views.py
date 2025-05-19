@@ -5,6 +5,9 @@ from api.serializers.product_serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
+# dev_10_Fruit
+from django.db.models import Max # 무조건 제일 위에 배치
+
 #http://127.0.0.1:8000/api/products/?ordering=-price
 
 # dev_29
@@ -103,7 +106,7 @@ class ProductFilter(django_filters.FilterSet):
         model = Product
         fields = ['category', 'min_price', 'max_price']   
 
-
+from rest_framework.decorators import action
 # ModelViewSet
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
@@ -129,3 +132,13 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     # 검색 필드 (?search=아이폰)
     # Product.objects.filter(name__icontains='컴퓨터')
     search_fields = ['name','description'] # 필요에 따라 수정 가능
+
+    # ViewSet에서 URL 추가. 69번째 강의 참고
+    @action(detail=False, methods=['get'], url_path='max-price')
+    def max_price(self, request):
+        # aggregate 집계 함수
+        # select Max('price') as price__max from product 엘리어스를 자동으로 적용한다. 이후 딕셔너리로 리턴한다.
+        # {price__max : 3000}
+        max_price = Product.objects.aggregate(Max('price'))['price__max'] or 0
+        return Response({'max_price': max_price})
+

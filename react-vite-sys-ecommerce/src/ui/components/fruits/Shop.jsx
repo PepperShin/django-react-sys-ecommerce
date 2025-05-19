@@ -1,10 +1,14 @@
 import { getCategories } from '@/api/CategoryApi';
 import { useShop } from '@/contexts/ShopContext';
 import { useEffect, useState } from 'react';
+import Pagenation from 'react-js-pagination';
+import "@/assets/paging/css/paging.css"
+import { getProductMaxPrice, getProducts } from '@/api/ProductApi';
 
 //dev_10_Fruit
 const Shop = () => {
-    const { setSearch, products, setOrdering, setCategory } = useShop();
+    // ShopContext.jsx 컨텍스트 끌고오기
+    const { setSearch, products, setOrdering, setCategory, totalCount, currentPage, setCurrentPage, setMaxPrice, setMinPrice } = useShop();
     const [categories, setCategories] = useState([]);
 
     // useEffect는 동기화를 지원을 안한다.
@@ -20,12 +24,72 @@ const Shop = () => {
 
     const handleSearchChange = (event) => {
         setSearch(event.target.value);
+        setCategory('');
+
+        setCurrentPage(1)
     };
     const handleOrderingChange = (event) => {
         setOrdering(event.target.value);
+
+        setCurrentPage(1)
     };
     const handleCategoryClick = (categoryId) => {
-        setCategory(categoryId)
+        setCategory(categoryId);
+
+        setCurrentPage(1)
+    };
+    // <Pagenation
+    //     activePage={currentPage}
+    //     itemsCountPerPage={10}
+    //     totalItemsCount={totalCount}
+    //     pageRangeDisplayed={5}
+    //     onChange={handlePageChange}
+    //     itemClass="rounded"
+    //     linkClass="rounded"
+    //     prevPageText="<"
+    //     nextPageText=">"
+    // />;
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+
+        //스크롤 맨 위로 이동
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    };
+
+    const [price, setPrice] = useState(0);
+    const [limitPrice, setLimitPrice] = useState(0);
+
+    useEffect(() => {
+        const fetchMaxPrice = async () => {
+            try { 
+                const response = await getProductMaxPrice(); // { max_price : 3000 }
+                const maxPrice = response.data.max_price;
+                console.log(maxPrice)
+                setLimitPrice(maxPrice)
+                
+            } catch (error) {
+                console.error("최대 가격을 가져오는 중 오류 발생:", error);
+            }
+        }
+        fetchMaxPrice()
+    },[limitPrice])
+
+    // 슬라이더 값 변경 처리
+    const handlePriceChange = (event) => {
+        const value = parseFloat(event.target.value)
+
+        setPrice(value)
+
+        // min = 0 값과 max 값으로 필터링
+        setMinPrice(0)
+        setMaxPrice(value)
+
+        // 슬라이더 값 변경시 카테고리는 초기화
+        setCurrentPage(1)
+        setCategory("")
     }
 
     return (
@@ -93,9 +157,13 @@ const Shop = () => {
                                                 <h4>Categories</h4>
                                                 <ul className="list-unstyled fruite-categorie">
                                                     {/* 옵셔널 문법 */}
-                                                    {categories?.map((category, index) => ( 
+                                                    {categories?.map((category, index) => (
                                                         <li key={index}>
-                                                            <div onClick={() => handleCategoryClick(category.id)} style={{ cursor: 'pointer'}} className="d-flex justify-content-between fruite-name">
+                                                            <div
+                                                                onClick={() => handleCategoryClick(category.id)}
+                                                                style={{ cursor: 'pointer' }}
+                                                                className="d-flex justify-content-between fruite-name"
+                                                            >
                                                                 {/* preventDefault는 a 를 클릭했을때 링크 이동 막는다 */}
                                                                 <a href="#" onClick={(event) => event.preventDefault()}>
                                                                     <i className="fas fa-apple-alt me-2" />
@@ -117,18 +185,19 @@ const Shop = () => {
                                                     id="rangeInput"
                                                     name="rangeInput"
                                                     min={0}
-                                                    max={500}
+                                                    max={limitPrice}
                                                     defaultValue={0}
+                                                    onChange={handlePriceChange}
                                                     oninput="amount.value=rangeInput.value"
                                                 />
                                                 <output
                                                     id="amount"
                                                     name="amount"
                                                     min-velue={0}
-                                                    max-value={500}
+                                                    max-value={limitPrice}
                                                     htmlFor="rangeInput"
                                                 >
-                                                    0
+                                                    {price}
                                                 </output>
                                             </div>
                                         </div>
@@ -323,6 +392,21 @@ const Shop = () => {
                                                 </div>
                                             ))}
                                         <div className="col-12">
+                                            <div className="d-flex justify-content-center mt-5">
+                                                <Pagenation
+                                                    activePage={currentPage}
+                                                    itemsCountPerPage={10}
+                                                    totalItemsCount={totalCount}
+                                                    pageRangeDisplayed={5}
+                                                    onChange={handlePageChange}
+                                                    itemClass="rounded"
+                                                    linkClass="rounded"
+                                                    prevPageText="<"
+                                                    nextPageText=">"
+                                                />
+                                            </div>
+                                        </div>
+                                        {/* <div className="col-12">
                                             <div className="pagination d-flex justify-content-center mt-5">
                                                 <a href="#" className="rounded">
                                                     «
@@ -349,7 +433,7 @@ const Shop = () => {
                                                     »
                                                 </a>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
