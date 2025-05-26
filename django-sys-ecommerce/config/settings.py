@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    "drf_spectacular", # dev_11_Fruit
 ]
 
 MIDDLEWARE = [
@@ -266,6 +267,7 @@ REST_FRAMEWORK = {
         # "rest_framework_simplejwt.authentication.JWTAuthentication",
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication", # dev_9_2_Fruit
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema", # dev_11_Fruit
 }
 
 from datetime import timedelta
@@ -322,3 +324,33 @@ SOCIALACCOUNT_LOGIN_ON_GET = True #브라우저에서 단순히 링크 클릭이
 # # 개발 환경이면 False, 운영이면 True
 # CSRF_COOKIE_SECURE = False
 # SESSION_COOKIE_SECURE = False
+
+SPECTACULAR_SETTINGS = {
+    # General schema metadata. Refer to spec for valid inputs
+    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/3.0.3.md#openapi-object
+    'TITLE': 'drf-spectacular API Document',
+    'DESCRIPTION': 'drf-specatular 를 사용해서 만든 API 문서입니다.',
+    'SWAGGER_UI_SETTINGS': {
+        'dom_id': '#swagger-ui',
+        'layout': 'BaseLayout', 
+        'deepLinking': True,  
+        'displayOperationId': True,
+        'filter': True,
+    },
+   
+    'LICENSE': {
+        'name': 'MIT License',
+    },
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+
+    'SWAGGER_UI_DIST': '//unpkg.com/swagger-ui-dist@3.38.0',
+
+    'CONTACT': {
+        'name': 'John Doe',
+        'email': 'johndoe@example.com',
+        'url': 'https://www.example.com',
+    }
+}
+
+# 출처: https://devspoon.tistory.com/256 [devspoon 오픈소스 개발자 번뇌 일지:티스토리]

@@ -8,9 +8,27 @@ from rest_framework import status
 # dev_10_Fruit
 from django.db.models import Max # 무조건 제일 위에 배치
 
+# dev_11_Fruit
+from drf_spectacular.utils import extend_schema, extend_schema_view
+
 #http://127.0.0.1:8000/api/products/?ordering=-price
 
 # dev_29
+# dev_11_Fruit
+@extend_schema( # 함수형 view에서만 사용하는 데코레이터. 클래스형은 불가능.
+    tags=["추가 API 설명"],
+    methods=["GET"], # 이 데코레이터를 적용할 HTTP 메서드
+    summary="상품들을 조회", # API 요약 설명
+    description="상품의 리스트를 조회하는 API입니다.", # API 상세 설명
+    responses={200: ProductSerializer(many=True)} # 응답 스키마
+)
+@extend_schema( # 함수형 view에서만 사용하는 데코레이터. 클래스형은 불가능.
+    tags=["추가 API 설명"],
+    methods=["POST"], # 이 데코레이터를 적용할 HTTP 메서드
+    summary="상품을 수정", # API 요약 설명
+    description="상품을 수정하는 API입니다.", # API 상세 설명
+    responses={200: ProductSerializer(many=False)} # 응답 스키마
+)
 @api_view(["GET", "POST"])
 def products_api(request):
     if request.method == "GET":
@@ -31,6 +49,7 @@ def products_api(request):
         serializer.save()
 
         return Response(serializer.data)
+
 
 
 # dev_30
@@ -108,6 +127,16 @@ class ProductFilter(django_filters.FilterSet):
 
 from rest_framework.decorators import action
 # ModelViewSet
+@extend_schema_view(
+    list=extend_schema(
+        tags=["product-list_view"],
+        description='extend_schema_view 예제 입니다.',
+    ),
+    create=extend_schema(
+        tags=["product-list_view"],
+        description='extend_schema_view 예제 입니다.',
+    )
+)
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer

@@ -6,7 +6,23 @@ from rest_framework import status
 
 from orders.models import Order, OrderItem
 
+# dev_11_Fruit
+from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiExample
+
 # dev_8_Fruit
+# dev_11_Fruit
+#dev_10_Fruit
+@extend_schema_view(
+    list=extend_schema(
+                tags=['payment_view'], 
+                description='extend_schema_view로 꾸미기'
+        ),
+    create=extend_schema(tags=['payment_view']),
+    retrieve=extend_schema(tags=['payment_view'], description="단일 예시 항목의 상세 정보를 반환합니다."),
+    update=extend_schema(tags=['payment_view'],description="기존 예시 항목을 업데이트합니다."),
+    partial_update=extend_schema(tags=['payment_view'],description="기존 예시 항목의 일부를 업데이트합니다."),
+    destroy=extend_schema(tags=['payment_view'], description="기존 예시 항목을 삭제합니다.")
+)
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer
@@ -14,9 +30,11 @@ class PaymentViewSet(viewsets.ModelViewSet):
     # create 커스터마이징
     # POST /api/payments/ - 결제 내역 생성 커스터마이징
     def create(self, request, *args, **kwargs):
-        # 1. 주문 생성
-        # 2. 배송지 저장 (user, order를 함께 저장)
-        # 3. 결제 저장 (serializer 사용 가능)
+        """
+        ## 1. 주문 생성
+        ## 2. 배송지 저장 (user, order를 함께 저장)
+        ## 3. 결제 저장 (serializer 사용 가능)
+        """
 
         try:
             user = request.user
